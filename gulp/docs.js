@@ -27,12 +27,15 @@ const changed = require('gulp-changed');
 const imagemin = require('gulp-imagemin');
 const webp = require('gulp-webp');
 
-gulp.task('clean:docs', function(done){
+
+gulp.task('clean:docs', function (done) {
 	if (fs.existsSync('./docs/')) {
-		return gulp.src('./docs/', {read: false}).pipe(clean({force:true}));
+		return gulp
+			.src('./docs/', { read: false })
+			.pipe(clean({ force: true }));
 	}
 	done();
-})
+});
 
 const fileIncludeSetting = {
 	prefix: '@@',
@@ -43,16 +46,16 @@ const plumberNotify = (title) => {
 	return {
 		errorHandler: notify.onError({
 			title: title,
-			message: 'Error <%=error.message %>',
-			sound: false
-		})	
+			message: 'Error <%= error.message %>',
+			sound: false,
+		}),
 	};
 };
 
-gulp.task('html:docs', function(){
+gulp.task('html:docs', function () {
 	return gulp
 		.src(['./src/html/**/*.html', '!./src/html/blocks/*.html'])
-		.pipe(changed('./docs/', {hasChanged: changed.compareContents}))
+		.pipe(changed('./docs/'))
 		.pipe(plumber(plumberNotify('HTML')))
 		.pipe(fileInclude(fileIncludeSetting))
 		.pipe(webpHTML())
@@ -60,64 +63,59 @@ gulp.task('html:docs', function(){
 		.pipe(gulp.dest('./docs/'));
 });
 
-gulp.task('sass:docs', function(){
+gulp.task('sass:docs', function () {
 	return gulp
 		.src('./src/scss/*.scss')
 		.pipe(changed('./docs/css/'))
 		.pipe(plumber(plumberNotify('SCSS')))
 		.pipe(sourceMaps.init())
-		.pipe(autoprefixer())
 		.pipe(sassGlob())
-		.pipe(webpCss())
-		.pipe(groupMedia())
 		.pipe(sass())
-		.pipe(csso())
 		.pipe(sourceMaps.write())
 		.pipe(gulp.dest('./docs/css/'))
 });
 
-gulp.task('images:docs', function(){
+gulp.task('images:docs', function () {
 	return gulp
 		.src('./src/img/**/*')
 		.pipe(changed('./docs/img/'))
 		.pipe(webp())
 		.pipe(gulp.dest('./docs/img/'))
-
 		.pipe(gulp.src('./src/img/**/*'))
 		.pipe(changed('./docs/img/'))
-		.pipe(imagemin({verbose: true}))
-		.pipe(gulp.dest('./docs/img/'))
+		.pipe(imagemin({ verbose: true }))
+		.pipe(gulp.dest('./docs/img/'));
 });
 
-gulp.task('fonts:docs', function(){
+gulp.task('fonts:docs', function () {
 	return gulp
 		.src('./src/fonts/**/*')
 		.pipe(changed('./docs/fonts/'))
-		.pipe(gulp.dest('./docs/fonts/'))
+		.pipe(gulp.dest('./docs/fonts/'));
 });
 
-gulp.task('files:docs', function(){
+gulp.task('files:docs', function () {
 	return gulp
 		.src('./src/files/**/*')
 		.pipe(changed('./docs/files/'))
-		.pipe(gulp.dest('./docs/files/'))
+		.pipe(gulp.dest('./docs/files/'));
 });
 
-gulp.task('js:docs', function(){
+gulp.task('js:docs', function () {
 	return gulp
 		.src('./src/js/*.js')
 		.pipe(changed('./docs/js/'))
 		.pipe(plumber(plumberNotify('JS')))
 		.pipe(babel())
-		.pipe(webpack(require('../webpack.config.js')))
-		.pipe(gulp.dest('./docs/js'))
-})
+		.pipe(webpack(require('./../webpack.config.js')))
+		.pipe(gulp.dest('./docs/js/'));
+});
 
 const serverOptions = {
 	livereload: true,
 	open: true,
 };
 
-gulp.task('server:docs', function() {
+gulp.task('server:docs', function () {
 	return gulp.src('./docs/').pipe(server(serverOptions));
 });

@@ -1,10 +1,16 @@
 /* Base */
+@import "./base/const";
+@import "./base/tools";
 @import "./base/reset";
-@import "./base/vars";
-@import "./base/base";
-@import "./base/utils";
-@import "./base/containers";
-@import "./base/sticky-footer";
 
-/* Blocks */
-@import "./blocks/*.scss";
+//----------------------------------header--------------------------------------------------
+@import "./blocks/header";
+
+//----------------------------------main----------------------------------------------------
+.main-block {
+	position: relative;
+	width: 100vw;
+	height: 100vh;
+}
+//----------------------------------footer--------------------------------------------------
+@import "./blocks/footer";
